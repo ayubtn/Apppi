@@ -125,10 +125,10 @@
     const sandboxParam = params.get("sandbox");
     let rememberedSandbox = null;
     try {
-      if (sandboxParam === "1"  sandboxParam === "true") {
+      if (sandboxParam === "1" || sandboxParam === "true") {
         localStorage.setItem("pi_sandbox", "1");
       }
-      if (sandboxParam === "0"  sandboxParam === "false") {
+      if (sandboxParam === "0" || sandboxParam === "false") {
         localStorage.setItem("pi_sandbox", "0");
       }
       rememberedSandbox = localStorage.getItem("pi_sandbox");
@@ -136,7 +136,7 @@
       rememberedSandbox = null;
     }
 
-const ref = (document.referrer  "").toLowerCase();
+    const ref = (document.referrer || "").toLowerCase();
     const isFromSandboxUi = ref.includes("sandbox.minepi.com");
 
     if (!sandboxParam && rememberedSandbox !== "1" && isFromSandboxUi) {
@@ -149,12 +149,12 @@ const ref = (document.referrer  "").toLowerCase();
     }
 
     const isSandbox =
-      sandboxParam === "1" 
-      sandboxParam === "true" 
-      rememberedSandbox === "1" 
-      isFromSandboxUi 
-      window.location.hostname === "sandbox.minepi.com" 
-      window.location.hostname === "localhost" 
+      sandboxParam === "1" ||
+      sandboxParam === "true" ||
+      rememberedSandbox === "1" ||
+      isFromSandboxUi ||
+      window.location.hostname === "sandbox.minepi.com" ||
+      window.location.hostname === "localhost" ||
       window.location.hostname === "127.0.0.1";
 
     Pi.init({
@@ -178,7 +178,7 @@ const ref = (document.referrer  "").toLowerCase();
     }
 
     async function apiPost(path, payload) {
-      const isNetlify = window.location.hostname.endsWith(".netlify.app")  window.location.hostname.endsWith(".netlify.live");
+      const isNetlify = window.location.hostname.endsWith(".netlify.app") || window.location.hostname.endsWith(".netlify.live");
       const functionMap = {
         "/payment/approve": "/.netlify/functions/payment-approve",
         "/payment/complete": "/.netlify/functions/payment-complete",
@@ -188,7 +188,7 @@ const ref = (document.referrer  "").toLowerCase();
       const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload  {})
+        body: JSON.stringify(payload || {})
       });
 
       const text = await response.text();
@@ -210,7 +210,7 @@ const ref = (document.referrer  "").toLowerCase();
       const requestedScopes = Array.isArray(scopes) && scopes.length ? scopes : ["username"];
       const needsPayments = requestedScopes.includes("payments");
 
-      if (accessToken && (!needsPayments  hasPaymentsScope)) {
+      if (accessToken && (!needsPayments || hasPaymentsScope)) {
         return { accessToken, username, hasPaymentsScope };
       }
 
@@ -260,9 +260,9 @@ const ref = (document.referrer  "").toLowerCase();
 
       try {
         await ensureAuth(["username", "payments"]);
-        setStatus((username ? مرحباً ${username}\n : "") + "جاري تجهيز الدفع...");
+        setStatus((username ? `مرحباً ${username}\n` : "") + "جاري تجهيز الدفع...");
 
-Pi.createPayment(
+        Pi.createPayment(
           {
             amount: 0.01,
             memo: "Quick Payment Test",
