@@ -1,12 +1,11 @@
-
 const http = require("http");
 const https = require("https");
 const fs = require("fs");
 const path = require("path");
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
-const PI_SERVER_API_KEY = process.env.PI_SERVER_API_KEY  "";
-const PI_API_BASE = process.env.PI_API_BASE  "https://api.minepi.com/v2";
+const PI_SERVER_API_KEY = process.env.PI_SERVER_API_KEY || "";
+const PI_API_BASE = process.env.PI_API_BASE || "https://api.minepi.com/v2";
 
 function sendJson(res, statusCode, obj) {
   const payload = JSON.stringify(obj);
@@ -66,7 +65,7 @@ function piRequest(method, apiPath, bodyObj) {
     hostname: url.hostname,
     path: url.pathname + url.search,
     headers: {
-      Authorization: Key ${PI_SERVER_API_KEY},
+      Authorization: `Key ${PI_SERVER_API_KEY}`,
       Accept: "application/json",
       "Content-Type": "application/json",
       "Content-Length": Buffer.byteLength(body)
@@ -87,7 +86,7 @@ function piRequest(method, apiPath, bodyObj) {
           parsed = data;
         }
 
-const statusCode = resp.statusCode  0;
+        const statusCode = resp.statusCode || 0;
         if (statusCode >= 200 && statusCode < 300) {
           resolve(parsed);
           return;
@@ -193,7 +192,7 @@ function serveIndex(res) {
 }
 
 const server = http.createServer(async (req, res) => {
-  const url = new URL(req.url  "/", http://${req.headers.host || "localhost"});
+  const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
 
   if (req.method === "GET" && (url.pathname === "/" || url.pathname === "/index.html")) {
     serveIndex(res);
@@ -219,5 +218,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  process.stdout.write(Server running on http://localhost:${PORT}\n);
+  process.stdout.write(`Server running on http://localhost:${PORT}\n`);
 });
